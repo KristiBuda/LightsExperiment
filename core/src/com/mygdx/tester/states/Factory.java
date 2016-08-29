@@ -21,6 +21,7 @@ import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
+import com.mygdx.tester.Bodies;
 import com.mygdx.tester.handlers.StateManager;
 import com.mygdx.tester.main.MainTester;
 
@@ -39,23 +40,66 @@ public class Factory extends ApplicationState {
     private OrthographicCamera orthographicCamera;
 
     private Body ground;
+    private Body body;
+    private Bodies objects;
 
+
+
+    //lights
+    public RayHandler rayHandler;
+    public box2dLight.PointLight pointLight;
     public Factory(StateManager gsm) {
 
         super(gsm);
 
         world = new World(new Vector2(0, -9.81f), true);
         debugRenderer = new Box2DDebugRenderer();
-        boolean isStatic;
-        boolean isCircle;
+//        boolean isStatic;
+//        boolean isCircle;
 
-        //set imput adapter as the imput processor
+        //set input adapter as the input processor
         Gdx.input.setInputProcessor(this);
 
+        //create Objects
+        objects = new Bodies();
 
-        createBox(160, 100, 50, 13, true);
-        createBox(160, 200, 5, 5, false);
-        createBox(150, 150, 5, 5, false);
+        //static bodies
+        //static in the middle
+
+        objects.createBox(160, 100, 50, 13, true);
+        body = world.createBody(objects.getBodyDef());
+        body.createFixture(objects.getFixtureDef());
+
+        //static left bound
+        objects.createBox(0, 120, 1, MainTester.V_HEIGHT, true);
+        body = world.createBody(objects.getBodyDef());
+        body.createFixture(objects.getFixtureDef());
+
+        //static right bound
+        objects.createBox(MainTester.V_WIDTH, 120, 1, MainTester.V_HEIGHT, true);
+        body = world.createBody(objects.getBodyDef());
+        body.createFixture(objects.getFixtureDef());
+
+        //static top
+        objects.createBox(MainTester.V_WIDTH, mainTester.V_HEIGHT, MainTester.V_WIDTH, 1, true);
+        body = world.createBody(objects.getBodyDef());
+        body.createFixture(objects.getFixtureDef());
+
+        //BOX dynamic bodies
+        objects.createBox(160, 200, 5, 5, false);
+        body = world.createBody(objects.getBodyDef());
+        body.createFixture(objects.getFixtureDef());
+        //
+        objects.createBox(150, 150, 5, 5, false);
+        body = world.createBody(objects.getBodyDef());
+        body.createFixture(objects.getFixtureDef());
+
+        //CIRCLE dynamic Bodies
+        objects.createCircle(160, 200, 5, false);
+        body = world.createBody(objects.getBodyDef());
+        body.createFixture(objects.getFixtureDef());
+
+
 
 
         orthographicCamera = new OrthographicCamera();
@@ -80,6 +124,9 @@ public class Factory extends ApplicationState {
         //the force that the max joint is going to apply
         jointDef.maxForce = 500;
 
+        //lights go here
+
+
     }
 
 
@@ -97,30 +144,6 @@ public class Factory extends ApplicationState {
         debugRenderer.render(world, orthographicCamera.combined);
     }
 
-    public void createBox(float posX, float posY, float width, float height, boolean isStatic) {
-        BodyDef bodyDef = new BodyDef();
-        FixtureDef fixtureDef = new FixtureDef();
-
-        PolygonShape shape = new PolygonShape();
-
-        bodyDef.position.set(posX / PPM, posY / PPM);
-
-        if (isStatic == true) {
-            bodyDef.type = BodyDef.BodyType.StaticBody;
-            fixtureDef.shape = shape;
-        } else {
-            bodyDef.type = BodyDef.BodyType.DynamicBody;
-            fixtureDef.shape = shape;
-            fixtureDef.restitution = 0.7f;
-        }
-
-        Body body = world.createBody(bodyDef);
-        shape.setAsBox(width / PPM, height / PPM);
-
-
-        body.createFixture(fixtureDef);
-
-    }
 
     private Vector3 tmp = new Vector3();
     private Vector2 tmp2 = new Vector2();
@@ -173,7 +196,7 @@ public class Factory extends ApplicationState {
     }
 
     public void dispose() {
-
+        rayHandler.dispose();
     }
 
 }

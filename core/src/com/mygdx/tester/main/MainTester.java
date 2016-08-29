@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.tester.handlers.StateManager;
 
+import box2dLight.RayHandler;
+
 import static com.mygdx.tester.handlers.B2Dhelpers.PPM;
 
 
@@ -16,6 +18,7 @@ public class MainTester implements ApplicationListener {
 	public static final int SCALE = 2;
 //	public static final float STEP = 1 / 60f;
 
+	//ray handler
 
 
 //	private float accum;
@@ -30,6 +33,7 @@ public class MainTester implements ApplicationListener {
 		cam = new OrthographicCamera();
 		cam.setToOrtho(false, V_WIDTH, V_HEIGHT);
 		stateManager = new StateManager(this);
+
 	}
 	
 	public void render() {
