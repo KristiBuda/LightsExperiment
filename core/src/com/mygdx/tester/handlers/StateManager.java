@@ -2,7 +2,7 @@ package com.mygdx.tester.handlers;
 
 import com.mygdx.tester.main.MainTester;
 import com.mygdx.tester.states.ApplicationState;
-import com.mygdx.tester.states.Factory;
+import com.mygdx.tester.states.Tester;
 import java.util.Stack;
 
 
@@ -35,7 +35,7 @@ public class StateManager {
 	}
 	
 	private ApplicationState getState(int state) {
-		if(state == PLAY) return new Factory(this);
+		if(state == PLAY) return new Tester(this);
 		return null;
 	}
 	

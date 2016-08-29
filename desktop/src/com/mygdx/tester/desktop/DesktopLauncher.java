@@ -10,6 +10,7 @@ public class DesktopLauncher {
 
         config.width = MainTester.V_WIDTH * MainTester.SCALE;
         config.height = MainTester.V_HEIGHT * MainTester.SCALE;
+        config.useGL30 = false;
 
         new LwjglApplication(new MainTester(), config);
     }

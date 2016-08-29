@@ -1,4 +1,4 @@
-package com.mygdx.tester;
+package com.mygdx.tester.objects;
 
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -49,12 +49,11 @@ public class Bodies {
         } else {
             bodyDef.type = BodyDef.BodyType.DynamicBody;
             fixtureDef.shape = shape;
-            fixtureDef.restitution = 0.7f;
+            fixtureDef.restitution = 0.5f;
             fixtureDef.density = 5;
         }
         shape.setRadius(radius / PPM);
     }
-
 
     public FixtureDef getFixtureDef() {return fixtureDef;}
     public BodyDef getBodyDef(){return bodyDef;}

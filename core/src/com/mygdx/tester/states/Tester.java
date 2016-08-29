@@ -7,7 +7,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g3d.environment.PointLight;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -15,28 +14,24 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
-import com.mygdx.tester.Bodies;
+import com.mygdx.tester.objects.Bodies;
 import com.mygdx.tester.handlers.StateManager;
 import com.mygdx.tester.main.MainTester;
 
+import box2dLight.ConeLight;
+import box2dLight.PointLight;
 import box2dLight.RayHandler;
 
 
-public class Factory extends ApplicationState {
+public class Tester extends ApplicationState {
 
-    //creating the mouse joint
-    private MouseJointDef jointDef;
-    private MouseJoint joint;
 
     private World world;
     private Box2DDebugRenderer debugRenderer;
-
     private OrthographicCamera orthographicCamera;
 
     private Body ground;
@@ -44,11 +39,13 @@ public class Factory extends ApplicationState {
     private Bodies objects;
 
 
+    //creating the mouse joint
+    private MouseJointDef jointDef;
+    private MouseJoint joint;
 
-    //lights
-    public RayHandler rayHandler;
-    public box2dLight.PointLight pointLight;
-    public Factory(StateManager gsm) {
+    RayHandler rayHandler;
+
+    public Tester(StateManager gsm) {
 
         super(gsm);
 
@@ -63,44 +60,7 @@ public class Factory extends ApplicationState {
         //create Objects
         objects = new Bodies();
 
-        //static bodies
-        //static in the middle
-
-        objects.createBox(160, 100, 50, 13, true);
-        body = world.createBody(objects.getBodyDef());
-        body.createFixture(objects.getFixtureDef());
-
-        //static left bound
-        objects.createBox(0, 120, 1, MainTester.V_HEIGHT, true);
-        body = world.createBody(objects.getBodyDef());
-        body.createFixture(objects.getFixtureDef());
-
-        //static right bound
-        objects.createBox(MainTester.V_WIDTH, 120, 1, MainTester.V_HEIGHT, true);
-        body = world.createBody(objects.getBodyDef());
-        body.createFixture(objects.getFixtureDef());
-
-        //static top
-        objects.createBox(MainTester.V_WIDTH, mainTester.V_HEIGHT, MainTester.V_WIDTH, 1, true);
-        body = world.createBody(objects.getBodyDef());
-        body.createFixture(objects.getFixtureDef());
-
-        //BOX dynamic bodies
-        objects.createBox(160, 200, 5, 5, false);
-        body = world.createBody(objects.getBodyDef());
-        body.createFixture(objects.getFixtureDef());
-        //
-        objects.createBox(150, 150, 5, 5, false);
-        body = world.createBody(objects.getBodyDef());
-        body.createFixture(objects.getFixtureDef());
-
-        //CIRCLE dynamic Bodies
-        objects.createCircle(160, 200, 5, false);
-        body = world.createBody(objects.getBodyDef());
-        body.createFixture(objects.getFixtureDef());
-
-
-
+        createScenery(objects);
 
         orthographicCamera = new OrthographicCamera();
         orthographicCamera.setToOrtho(false, MainTester.V_WIDTH / PPM, MainTester.V_HEIGHT / PPM);
@@ -125,23 +85,28 @@ public class Factory extends ApplicationState {
         jointDef.maxForce = 500;
 
         //lights go here
-
-
+        rayHandler = new RayHandler(world);
+        rayHandler.setCombinedMatrix(orthographicCamera.combined);
+        int rays = 500;
+        Math.round(rays / PPM);
+        new PointLight(rayHandler, rays, Color.WHITE, 10, 200/ PPM, 239/ PPM);
     }
-
 
     public void handleInput() {
     }
 
     public void update(float dt) {
-        world.step(dt, 6, 2);
+//        world.step(dt, 6, 2);
     }
 
     public void render() {
-        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        world.step(1/60f,6,2);
         debugRenderer.render(world, orthographicCamera.combined);
+
+        rayHandler.updateAndRender();
     }
 
 
@@ -195,7 +160,50 @@ public class Factory extends ApplicationState {
         return true;
     }
 
+
+    public void createScenery(Bodies objects) {
+
+        //static bodies
+        //static in the middle
+
+        objects.createBox(160, 100, 50, 13, true);
+        body = world.createBody(objects.getBodyDef());
+        body.createFixture(objects.getFixtureDef());
+
+        //static left bound
+        objects.createBox(0, 120, 1, MainTester.V_HEIGHT, true);
+        body = world.createBody(objects.getBodyDef());
+        body.createFixture(objects.getFixtureDef());
+
+        //static right bound
+        objects.createBox(MainTester.V_WIDTH, 120, 1, MainTester.V_HEIGHT, true);
+        body = world.createBody(objects.getBodyDef());
+        body.createFixture(objects.getFixtureDef());
+
+        //static top
+        objects.createBox(MainTester.V_WIDTH, mainTester.V_HEIGHT, MainTester.V_WIDTH, 1, true);
+        body = world.createBody(objects.getBodyDef());
+        body.createFixture(objects.getFixtureDef());
+
+        //BOX dynamic bodies
+        objects.createBox(160, 200, 5, 5, false);
+        body = world.createBody(objects.getBodyDef());
+        body.createFixture(objects.getFixtureDef());
+        //
+        objects.createBox(150, 150, 5, 5, false);
+        body = world.createBody(objects.getBodyDef());
+        body.createFixture(objects.getFixtureDef());
+
+        //CIRCLE dynamic Bodies
+        objects.createCircle(160, 200, 5, false);
+        body = world.createBody(objects.getBodyDef());
+        body.createFixture(objects.getFixtureDef());
+
+    }
+
+
     public void dispose() {
+        world.dispose();
         rayHandler.dispose();
     }
 
