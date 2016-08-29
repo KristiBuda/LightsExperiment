@@ -49,7 +49,7 @@ public class Bodies {
         } else {
             bodyDef.type = BodyDef.BodyType.DynamicBody;
             fixtureDef.shape = shape;
-            fixtureDef.restitution = 0.5f;
+            fixtureDef.restitution = 1;
             fixtureDef.density = 5;
         }
         shape.setRadius(radius / PPM);

@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -22,6 +23,7 @@ import com.mygdx.tester.objects.Bodies;
 import com.mygdx.tester.handlers.StateManager;
 import com.mygdx.tester.main.MainTester;
 
+import box2dLight.ChainLight;
 import box2dLight.ConeLight;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
@@ -43,7 +45,7 @@ public class Tester extends ApplicationState {
     private MouseJointDef jointDef;
     private MouseJoint joint;
 
-    RayHandler rayHandler;
+    private RayHandler rayHandler;
 
     public Tester(StateManager gsm) {
 
@@ -87,9 +89,21 @@ public class Tester extends ApplicationState {
         //lights go here
         rayHandler = new RayHandler(world);
         rayHandler.setCombinedMatrix(orthographicCamera.combined);
+        rayHandler.setBlur(true);
+        rayHandler.setBlurNum(1);
+        rayHandler.setAmbientLight(0.5f, 0.5f, 0.5f, 0.5f);
+//        rayHandler.setShadows(false);
+
         int rays = 500;
         Math.round(rays / PPM);
-        new PointLight(rayHandler, rays, Color.WHITE, 10, 200/ PPM, 239/ PPM);
+
+        PointLight pointLight = new PointLight(rayHandler, rays, Color.WHITE, 10, 200 / PPM, 350/ PPM);
+        pointLight.setXray(false);
+//        box2dLight.DirectionalLight directionalLight;
+//        directionalLight= new box2dLight.DirectionalLight(rayHandler, rays, Color.WHITE, -90);
+
+
+
     }
 
     public void handleInput() {
@@ -103,7 +117,7 @@ public class Tester extends ApplicationState {
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        world.step(1/60f,6,2);
+        world.step(1 / 60f, 6, 2);
         debugRenderer.render(world, orthographicCamera.combined);
 
         rayHandler.updateAndRender();
@@ -180,10 +194,10 @@ public class Tester extends ApplicationState {
         body = world.createBody(objects.getBodyDef());
         body.createFixture(objects.getFixtureDef());
 
-        //static top
-        objects.createBox(MainTester.V_WIDTH, mainTester.V_HEIGHT, MainTester.V_WIDTH, 1, true);
-        body = world.createBody(objects.getBodyDef());
-        body.createFixture(objects.getFixtureDef());
+//        //static top
+//        objects.createBox(MainTester.V_WIDTH, mainTester.V_HEIGHT, MainTester.V_WIDTH, 1, true);
+//        body = world.createBody(objects.getBodyDef());
+//        body.createFixture(objects.getFixtureDef());
 
         //BOX dynamic bodies
         objects.createBox(160, 200, 5, 5, false);
